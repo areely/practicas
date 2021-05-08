@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record model="ir.ui.view" id="tree_student_id">
+		<field name="name">academy.student.tree</field>
+		<field name="model">academy.student</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Listado Estudiantes">
+				<field name="name"/>
+				<field name="last_name"/>
+				<field name="create_date"/>
+				<field name="photo"/>
+			</tree>
+		</fiel>
+	</record>
+	
+	<record model="ir.actions.act_window" id="academy_student_form">
+	<field name="name">academy.student.form</field>
+	<field name="model">academy.student</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+		<form string="Listado de estudiantes">
+			<sheet>
+		<field name="photo" widget="imagen" class="oe_avatar"
+		 options="{&quot;preview_image&quot;:
+		 &quot:image_medium&quot;:
+		 &quot;size&quot;:[90,90]}"/>
+		 <group colspan="4">
+		 	<fiel name="name"/>
+		 	<fiel name="last_name"/>
+		 	<fiel name="create_date"/>
+		 </group>
+	   </sheet>
+	  </form>
+	</field>
+  </record>
+
+	<record model="ir.actions.act_window" id="act_student_academy">
+		<field name="name">Registro de estudiantes</field>
+		<field name="res_model">academy.student</field>
+		<field name="view_mode">tree,form</field>
+</record>
+		<menuitem id="id_principal_academy" name="Odoo Academy Practica"/>
+		<menuitem id="id_menu_student" parent="id_principal_academy" name="Registros" sequence="0"/>
+		<menuitem id="id_menu_student_act" parent="id_principal_academy"  name="Estudiantes"
+		action="act_student_academy" sequence="0"/>
+
+
+
+
+	</data>
+	</odoo>
