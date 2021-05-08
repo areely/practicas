@@ -4,7 +4,7 @@
     "depends": ["base"],
     "author": (
         
-        "Arely Trujillo"
+        "Areely Trujillo"
     ),
     "license": "AGPL-3",
     "summary": """Modulo de practica Quadit""",
