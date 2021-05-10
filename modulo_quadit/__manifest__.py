@@ -1,7 +1,7 @@
 {
     "name": "Modulo Quadit",
     "version": "14.0",
-    "depends": ["base"],
+    "depends": ["base","sale","account"],
     "author": (
         
         "Areely Trujillo"
