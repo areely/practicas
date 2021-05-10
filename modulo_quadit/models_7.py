@@ -6,7 +6,7 @@ class academy_calificacion(models.Model):
 	_description = "Calificacion"
 	name = fields.Many2one('academy.materia', 'Materia')
 	calificacion = fields.Float('Calificacion', digits=(3,2))
-	student_id = fields.Many2one('academia.student', 'ID Ref')
+	student_id = fields.Many2one('academy.student', 'ID Ref')
 
 	@api.one
 	@api.constrains('calificacion')

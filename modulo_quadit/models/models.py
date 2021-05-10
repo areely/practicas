@@ -1,31 +1,59 @@
 from odoo import _, api, fields, models, exceptions
 
+class academy_materia_list(models.Model):
+	_name = 'academy.materia.list'
+	grado_id = fields.Many2one('academy.grado', 'ID Referencia')
+	materia_id = fields.Many2one('academy.materia', 'Materia', required=True)
+
+class academy_grado(models.Model):
+	_name = 'academy.grado'
+	_description = 'Modelo grados con un listado de materias'
+	name = fields.Selection([
+		('1','Primero'),
+		('2','Segundo'),
+		('3','Tercero'),
+		('4','Cuarto'),
+		('5','Quinto'),
+		('6','Sexto')],
+		 'Grado', required=True)
+
+	gupo = fields.Selection([
+		('a','A'),
+		('b','B'),
+		('c','C')],'Grupo')
+
+materia_ids = fields.One2many('academy.materia.list', 'grado_id', 'Materias')
+
+
 
 class res_partner(models.Model):
 _name = "res.partner"
 _inherit = "res.partner"
 company_type = fields.Selection(selection_add=[('is_school', 'Escuela'),('student', 'Estudiante')])
-student = fields.Many2one('academia.student', 'Estudiante')
+student = fields.Many2one('academy.student', 'Estudiante')
 	
-		
+class academy_student(models.Model):	_inherit = ['portal.mixin','mail.thread', 'mail.activity.mixin']
 
-class academy_student(models.Model):
-	_inherit = ['portal.mixin','mail.thread', 'mail.activity.mixin']
+	@api.model
+	def _get_school_default(self):
+	school_id = self.env['res.partner'].search([('name','=',"Escuela Comodin")])
+	return school_id
+
 	_name = "academy.student"
 	_description = "Modelo para formulario de estudiantes"
 	name = fields.Char('Nombre', size = 128, track_visibility="onchange")
 	last_name = fields.Char('Apellido', size = 128, track_visibility="onchange")
-	photo = fields.Binary('Fotografía')
+	photo = fields.Binary('Fotografia')
 	create_date = fields.Datetime('Fecha de creacion', readonly=True)
 	note = fields.Html('Comentarios')
 	state = fields.Selection([('draf', 'Documento borrador'), 
 							  ('progress', 'Proceso'),
 							  ('done', 'Egresado')], 'Estado')
 	active = fields.Boolean('Inactivo')
-	age = fields.Integer('Edad', track_visibility="onchange")
-	curp = fields.Char('Curp', size=18)
+	age = fields.Integer('Edad', track_visibility=True)
+	curp = fields.Char('Curp', size=18, copy=False, track_visibility=True)
 	#Relaciones
-	partner_id = fields.Many2one('res.partner', 'Escuela')
+	partner_id = fields.Many2one('res.partner', 'Escuela', default=_get_school_default)
 	country = fields.Many2one('res.country', 'Pais' related='partner_id.country_id')
 
 	invoice_ids = fields.Many2many('account.invoice',

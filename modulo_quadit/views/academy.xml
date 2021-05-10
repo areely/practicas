@@ -78,14 +78,70 @@
 		<field name="name">Materias</field>
 		<field name="res_model">academy.calificacion</field>
 		<field name="view_mode">tree,form</field>
+		<field name="arch" type="xml">
+			<tree string="Listado de estudiantes">
+				<field name="name"/>
+				<field name="last_name"/>
+			</tree>
+		</field>
 </record>
+
+<record model="ir.ui.view" id="tree_grados_id">
+		<field name="name">academy.grado.tree</field>
+		<field name="model">academy.grado</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Grados">
+			</tree>
+		</field>
+</record>
+
+<record model="ir.ui.view" id="academia.grado">
+		<field name="name">academy.grado.form</field>
+		<field name="model">academy.grado</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<form string="Grado">
+			<header></header>
+			<sheet>
+				<group>
+					<field name="name"/>
+					<field name="grupo"/>
+				</group>
+				<notebook>
+							<page>
+								<field name="materia_ids">
+								<tree string="Materias" editable="bottom">
+								<field name="materia_id"/>
+							</tree>
+						</field>
+					</page>
+				</notebook>
+			</sheet>
+		</form>
+	</field>
+</record>
+	
+	<record model="ir.actions.act_window" id="act_config_grados">
+			<field name="name">Grados</field>
+			<field name="res_model">academy.grados</field>
+			<field name="view_mode">tree,form</field>
+	</record>
+
+	<record model="ir.actions.act_window" id="act_config_academy">
+			<field name="name">Materias</field>
+			<field name="res_model">academy.calificacion</field>
+			<field name="view_mode">tree,form</field>
+	</record>
 
 		<menuitem id="id_principal_academy" name="Odoo Academy Practica"/>
 		<menuitem id="id_menu_student" parent="id_principal_academy" name="Registros" sequence="0"/>
 		<menuitem id="id_menu_student_act" parent="id_principal_academy"  name="Estudiantes"
 		action="act_student_academy" sequence="0"/>
 		<menuitem id="id_menu_config" parent="id_principal_academy" name="Configuracion" sequence="1"/>
-		<menuitem id="id_menu_config_act" parent="id_principal_academy" action="act_config_academy" sequence="0"/>
+		<menuitem id="id_menu_calificacion_act" parent="id_menu_config" name="Materias" 
+		action="act_config_academy" sequence="0"/>
+		<menuitem id="id_menu_grado_act" parent="id_menu_config" name="Grados" action="act_config_grados" sequence="0"/>
 
 
 
