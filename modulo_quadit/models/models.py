@@ -97,7 +97,7 @@ class academy_student(models.Model):
 	@api.constrains('curp')
 	def _check_lines(self):
 		if len(self.curp)<18:
-			raise.exceptions.ValidationError("Curp debe tener 18 caracteres")
+			raise exceptions.ValidationError("Curp debe tener 18 caracteres")
 
 	calificaciones_id = fields.One2many('academy.calificacion',
 										'student_id',
@@ -141,8 +141,8 @@ class academy_student(models.Model):
 
 	_orden = 'name'
 	_defaults = {
-				 'state' = 'draf',
-				 'active' = True, }
+				 'state' : 'draft',
+				 'active' : True, }
 
 	def done(self):
 		self.state = 'done'
