@@ -11,8 +11,8 @@
     "website": "www.quadit.mx",
     "data": [
         "security/ir.model.access.csv",
-        "views/view.xml",
-        "views/academy.xml",
+      #  "views/view.xml",
+      #  "views/academy.xml",
     ],
     "installable": True,
     "auto_install": False,

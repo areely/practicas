@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from odoo import _, api, fields, models, exceptions
 
 class academy_calificacion(models.Model):
@@ -8,13 +8,12 @@ class academy_calificacion(models.Model):
 	calificacion = fields.Float('Calificacion', digits=(3,2))
 	student_id = fields.Many2one('academy.student', 'ID Ref')
 
-	@api.one
 	@api.constrains('calificacion')
 	def _check_calificacion(self):
 		if self.calificacion < 5 or self.calificacion > 10:
-			raise.exceptions.ValidationError('La calificacion debe ser mayor a 5 o menor igual a 10')
+			raise exceptions.ValidationError('La calificacion debe ser mayor a 5 o menor igual a 10')
 
-	class academy_materia(models.Model):
+class academy_materia(models.Model):
 	_name = "academy.materia"
 	_description = "Materias"
 	name = fields.Char('Nombre')

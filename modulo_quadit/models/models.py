@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from odoo import _, api, fields, models, exceptions
 
 class academy_materia_list(models.Model):
@@ -10,10 +11,10 @@ class academy_grado(models.Model):
 	_description = 'Modelo grados con un listado de materias'
 
 	@api.depends('name', 'grupo')
-		def calculate_name(self):
-			complete_name = self.name + " / " + self.grupo
+	def calculate_name(self):
+		complete_name = self.name + " / " + self.grupo
 		self.complete_name = complete_name
-	_rec_name  = complete_name
+		_rec_name  = complete_name
 
 	name = fields.Selection([
 		('1','Primero'),
@@ -29,16 +30,14 @@ class academy_grado(models.Model):
 		('b','B'),
 		('c','C')],'Grupo')
 
-materia_ids = fields.One2many('academy.materia.list', 'grado_id', 'Materias')
-complete_name = fields.Char('Nombre Completo', size=128, compute="calculate_name" ,store=True)
-
-
+	materia_ids = fields.One2many('academy.materia.list', 'grado_id', 'Materias')
+	complete_name = fields.Char('Nombre Completo', size=128, compute="calculate_name" ,store=True)
 
 class res_partner(models.Model):
-_name = "res.partner"
-_inherit = "res.partner"
-company_type = fields.Selection(selection_add=[('is_school', 'Escuela'),('student', 'Estudiante')])
-student = fields.Many2one('academy.student', 'Estudiante')
+	_name = "res.partner"
+	_inherit = "res.partner"
+	company_type = fields.Selection(selection_add=[('is_school', 'Escuela'),('student', 'Estudiante')])
+	student = fields.Many2one('academy.student', 'Estudiante')
 	
 class academy_student(models.Model):	
 	_inherit = ['portal.mixin','mail.thread', 'mail.activity.mixin']
@@ -52,11 +51,10 @@ class academy_student(models.Model):
 				promedio = acum/len(self.calificaciones_id)
 				self.promedio = promedio
 
-
 	@api.model
 	def _get_school_default(self):
-	school_id = self.env['res.partner'].search([('name','=',"Escuela Comodin")])
-	return school_id
+		school_id = self.env['res.partner'].search([('name','=',"Escuela Comodin")])
+		return school_id
 
 	_name = "academy.student"
 	_description = "Modelo para formulario de estudiantes"
@@ -74,7 +72,7 @@ class academy_student(models.Model):
 	curp = fields.Char('Curp', size=18, copy=False, track_visibility=True)
 	#Relaciones
 	partner_id = fields.Many2one('res.partner', 'Escuela', default=_get_school_default)
-	country = fields.Many2one('res.country', 'Pais' related='partner_id.country_id')
+	country = fields.Many2one('res.country', 'Pais' ,related='partner_id.country_id')
 
 	invoice_ids = fields.Many2many('account.invoice',
 									'student_invoice_rel',
@@ -85,20 +83,17 @@ class academy_student(models.Model):
 	promedio = fields.Float('Promedio', digits=(14,2),compute="calcula_promedio")
 
 	@api.onchange('grado_id')
-		def onchange_grado(self)
+	def onchange_grado(self):
 		calificaciones_list = []
-			for materia in self.grado_id.materia_ids:
+		for materia in self.grado_id.materia_ids:
 			 xval = (0,0, {
 			 	'name': materia.materia_id.id,
 			 	'calificacion': 5
 			 	})
-	calificaciones_list.append(xval)
-	self.update({'calificaciones_id': calificaciones_list})
+		calificaciones_list.append(xval)
+		self.update({'calificaciones_id': calificaciones_list})
 
 
-
-
-	@api.one
 	@api.constrains('curp')
 	def _check_lines(self):
 		if len(self.curp)<18:
@@ -112,29 +107,28 @@ class academy_student(models.Model):
 
 	@api.model
 	def create(self,values):
-	if values['name']:
-	   nombre = values['name']
-	   exist_ids = self.env['academy.student'].search([('name','=',self.name)])
-	   if exist_ids:
-	   	values.update({
-	   		'name': values['name']+"(copia)",
-	   		})
-	   	res=super(academy_student, self).create(values)
-	   	partner_obj = self.env['res.partner']
-	   	vals_to_partner = {
-	   	'name': res['name']+" "+res['last_name'],
-	   	'company_type': 'student',
-	   	'student_id': res['id'],
-	}
+		if values['name']:
+			nombre = values['name']
+			exist_ids = self.env['academy.student'].search([('name','=',self.name)])
+		if exist_ids:
+			values.update({
+				'name': values['name']+"(copia)",
+				})
+			res=super(academy_student, self).create(values)
+			partner_obj = self.env['res.partner']
+			vals_to_partner = {
+			'name': res['name']+" "+res['last_name'],
+			'company_type': 'student',
+			'student_id': res['id'],
+		}
 
-	print(vals_to_partner)
-	partner_id = partner_obj.create(vals_to_partner)
-	print("===>partner_id", 'partner_id')
-	return res
+		print(vals_to_partner)
+		partner_id = partner_obj.create(vals_to_partner)
+		print("===>partner_id", 'partner_id')
+		return res
 
 	#Eliminar usuario en dos modulos
 
-	@api.multi
 	def unlink(self):
 		partner_obj = self.env['res.partner']
 		partner_ids = partner_obj.search([('student','in',self.ids)])
@@ -150,22 +144,18 @@ class academy_student(models.Model):
 				 'state' = 'draf',
 				 'active' = True, }
 
-	@api.multi 
 	def done(self):
 		self.state = 'done'
 		return True
 
-	@api.multi 
 	def confirm(self):
 		self.state = 'process'
 		return True
 
-	@api.multi 
 	def cancel(self):
 		self.state = 'cancel'
 		return True
 
-	@api.multi 
 	def draft(self):
 		self.state = 'draft'
 		return True
