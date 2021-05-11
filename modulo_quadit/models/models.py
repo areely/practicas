@@ -8,6 +8,13 @@ class academy_materia_list(models.Model):
 class academy_grado(models.Model):
 	_name = 'academy.grado'
 	_description = 'Modelo grados con un listado de materias'
+
+	@api.depends('name', 'grupo')
+		def calculate_name(self):
+			complete_name = self.name + " / " + self.grupo
+		self.complete_name = complete_name
+	_rec_name  = complete_name
+
 	name = fields.Selection([
 		('1','Primero'),
 		('2','Segundo'),
@@ -23,6 +30,7 @@ class academy_grado(models.Model):
 		('c','C')],'Grupo')
 
 materia_ids = fields.One2many('academy.materia.list', 'grado_id', 'Materias')
+complete_name = fields.Char('Nombre Completo', size=128, compute="calculate_name" ,store=True)
 
 
 
@@ -32,7 +40,18 @@ _inherit = "res.partner"
 company_type = fields.Selection(selection_add=[('is_school', 'Escuela'),('student', 'Estudiante')])
 student = fields.Many2one('academy.student', 'Estudiante')
 	
-class academy_student(models.Model):	_inherit = ['portal.mixin','mail.thread', 'mail.activity.mixin']
+class academy_student(models.Model):	
+	_inherit = ['portal.mixin','mail.thread', 'mail.activity.mixin']
+
+	@api.depends('calificaciones_id')
+	def calcula_promedio(self):
+		acum = 0.0
+		for xcal in self.calificaciones_id:
+			acum+=xcal.calificacion
+			if acum:
+				promedio = acum/len(self.calificaciones_id)
+				self.promedio = promedio
+
 
 	@api.model
 	def _get_school_default(self):
@@ -48,7 +67,8 @@ class academy_student(models.Model):	_inherit = ['portal.mixin','mail.thread', '
 	note = fields.Html('Comentarios')
 	state = fields.Selection([('draf', 'Documento borrador'), 
 							  ('progress', 'Proceso'),
-							  ('done', 'Egresado')], 'Estado')
+							  ('done', 'Egresado')
+							  ('cancel', 'Expulsado')], 'Estado', default="draft")
 	active = fields.Boolean('Inactivo')
 	age = fields.Integer('Edad', track_visibility=True)
 	curp = fields.Char('Curp', size=18, copy=False, track_visibility=True)
@@ -60,6 +80,22 @@ class academy_student(models.Model):	_inherit = ['portal.mixin','mail.thread', '
 									'student_invoice_rel',
 									'student_id', 'invoice_id',
 									'Facturas')
+
+	grado_id = fields.Many2one('academy.grado', 'Grado')
+	promedio = fields.Float('Promedio', digits=(14,2),compute="calcula_promedio")
+
+	@api.onchange('grado_id')
+		def onchange_grado(self)
+		calificaciones_list = []
+			for materia in self.grado_id.materia_ids:
+			 xval = (0,0, {
+			 	'name': materia.materia_id.id,
+			 	'calificacion': 5
+			 	})
+	calificaciones_list.append(xval)
+	self.update({'calificaciones_id': calificaciones_list})
+
+
 
 
 	@api.one
@@ -113,6 +149,26 @@ class academy_student(models.Model):	_inherit = ['portal.mixin','mail.thread', '
 	_defaults = {
 				 'state' = 'draf',
 				 'active' = True, }
+
+	@api.multi 
+	def done(self):
+		self.state = 'done'
+		return True
+
+	@api.multi 
+	def confirm(self):
+		self.state = 'process'
+		return True
+
+	@api.multi 
+	def cancel(self):
+		self.state = 'cancel'
+		return True
+
+	@api.multi 
+	def draft(self):
+		self.state = 'draft'
+		return True
 
 
 

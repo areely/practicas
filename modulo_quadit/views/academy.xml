@@ -21,8 +21,12 @@
 	<field name="type">form</field>
 	<field name="arch" type="xml">
 		<form string="Listado de estudiantes">
-			<header> <fiel name="state" widget="statusbar"/> </header>
-
+			<header> 
+			 <button string="Confirmar" name="confirm" type="object" states="draft"/>
+			 <button string="Cancelar" name="cancel" type="object" states="draft"/>
+			 <button string="Egresar" name="done" type="object" states="process"/>
+			 <button string="Borrador" name="draft" type="object" states="cancel"/>
+			 <field name="state" widget="statusbar"/> </header>
 			<sheet>
 		<field name="photo" widget="image" class="oe_avatar"
 		 options="{&quot;preview_image&quot;:
@@ -35,6 +39,7 @@
 		 	<field name="age"/>
 		 	<field name="partner_id"/>
 		 	<field name="country"/>
+		 	<field name="grado_id"/>
 		 	<field name="create_date"/>
 		 	<field name="active"/>
 		 </group>
@@ -47,6 +52,9 @@
 		 			<field name="calificacion", required="True"/>
 				</tree>
 			</field>
+		<group class="oe_subtotal_footeroe_right" colspan="2" name="grupo promedio">	
+			<field name="promedio"/>
+		</group>		
 		 </page>
 		 		<page string="Comentarios">
 					<field name="note"/>
@@ -92,6 +100,7 @@
 		<field name="type">tree</field>
 		<field name="arch" type="xml">
 			<tree string="Grados">
+				<field name="complete_name"/>
 			</tree>
 		</field>
 </record>
